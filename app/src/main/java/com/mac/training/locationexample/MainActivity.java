@@ -17,6 +17,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -147,6 +148,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        lM.requestLocationUpdates(provider, 100, 0, this);
+        Button mB = (Button) view;
+        if(mB.getText().toString().equals("Real Time")){
+            mB.setText("Save Battery");
+            lM.requestLocationUpdates(provider, 100, 0, this);
+        }else{
+            mB.setText("Real Time");
+            lM.requestLocationUpdates(provider, 20 * 1000, 0, this);
+        }
+
     }
 }
