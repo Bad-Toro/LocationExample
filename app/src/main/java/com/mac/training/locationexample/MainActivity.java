@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        lM.requestLocationUpdates(provider, 10*1000, 0, this);
+        lM.requestLocationUpdates(provider, 60*1000, 0, this);
     }
 
     @Override
@@ -149,12 +149,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             return;
         }
         Button mB = (Button) view;
-        if(mB.getText().toString().equals("Real Time")){
-            mB.setText("Save Battery");
+        if(mB.getText().toString().equals("Go to Real Time")){
+            mB.setText("Gop to Save Battery");
             lM.requestLocationUpdates(provider, 100, 0, this);
         }else{
-            mB.setText("Real Time");
-            lM.requestLocationUpdates(provider, 20 * 1000, 0, this);
+            mB.setText("Go to Real Time");
+            lM.requestLocationUpdates(provider, 60 * 1000, 0, this);
         }
 
     }

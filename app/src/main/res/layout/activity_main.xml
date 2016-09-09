@@ -25,12 +25,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/speed"
-        android:textSize="22sp"
+        android:textSize="48sp"
         />
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Real Time"
+        android:text="Go to Real Time"
         android:onClick="onNow"
         />
 </LinearLayout>
