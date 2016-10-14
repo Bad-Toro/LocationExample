@@ -11,10 +11,22 @@
     tools:context="com.mac.training.locationexample.MainActivity">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/speed"
+        android:textSize="75sp"
+        android:text="0 mph"
+        android:gravity="center_horizontal"
+        />
+    <TextView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Hello World!"
-        android:id="@+id/txt"/>
+        android:id="@+id/txt"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:gravity="center_horizontal"
+        />
 
     <TextView
         android:layout_width="wrap_content"
@@ -24,11 +36,13 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/speed"
-        android:textSize="48sp"
-        />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Max: 0 mph"
+        android:id="@+id/topSpeed"
+        android:gravity="center_horizontal"/>
+
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Go to Real Time"
         android:onClick="onNow"

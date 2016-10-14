@@ -10,16 +10,14 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Handler;
-import android.os.Message;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.List;
@@ -31,6 +29,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     String provider;
     TextView myAddress;
     TextView mySpeed;
+    TextView maxSpeed;
+    int topSpeed = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,13 +40,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         myTxt = (TextView) findViewById(R.id.txt);
         myAddress = (TextView) findViewById(R.id.myAddress);
         mySpeed = (TextView) findViewById(R.id.speed);
+        maxSpeed = (TextView) findViewById(R.id.topSpeed);
 
         lM = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         Criteria crit = new Criteria();
         provider = lM.getBestProvider(crit, false);
 
-        gimmeeBeer();
+        checkGPSIsOn();
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
@@ -60,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     }
 
-    void gimmeeBeer() {
+    void checkGPSIsOn() {
         boolean enabled = lM.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
         // check if enabled and if not send user to the GSP settings
@@ -82,11 +84,36 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     @Override
     protected void onResume() {
         super.onResume();
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        checkGPSIsOn();
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission
+                        (this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                        PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    747);
             return;
         }
-        lM.requestLocationUpdates(provider, 60*1000, 0, this);
+        lM.requestLocationUpdates(provider, 60 * 1000, 0, this);
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == 747) {
+            if (grantResults.length > 0 &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                onResume();
+            }
+        }
+
+    }
+
+
 
     @Override
     public void onLocationChanged(Location location) {
@@ -94,11 +121,16 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         double log = location.getLongitude();
         String prov = location.getProvider();
         String addr = getAddress(lat, log);
-        String tmp = "Lat: " + lat + "\nLog: " + log + "\n" + prov
-                + "\n\n" +addr;
+//        String tmp = "Lat: " + lat + "\nLog: " + log + "\n" + prov
+//                + "\n\n" +addr;
+        String tmp = addr;
 
         myTxt.setText(tmp);
-        mySpeed.setText(String.valueOf((location.getSpeed() * 2.23694) + " Mph"));
+        int thisSpeed = (int) Math.round(location.getSpeed() * 2.23694);
+        mySpeed.setText(String.valueOf(thisSpeed) + " mph");
+        if (thisSpeed > topSpeed)
+            topSpeed = thisSpeed;
+        maxSpeed.setText("Max: " + String.valueOf(topSpeed) + " mph");
     }
 
     @Override
@@ -133,8 +165,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
               String knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL
 
               return address + "\n" + city + ", " + state
-                      + ", " + postalCode + "\n" + country
-                      ;
+                      + ", " + postalCode;
           } else {
               return "NoGood";
           }
@@ -150,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }
         Button mB = (Button) view;
         if(mB.getText().toString().equals("Go to Real Time")){
-            mB.setText("Gop to Save Battery");
+            mB.setText("Go to Save Battery");
             lM.requestLocationUpdates(provider, 100, 0, this);
         }else{
             mB.setText("Go to Real Time");
